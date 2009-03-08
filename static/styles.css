@@ -22,7 +22,7 @@ tr {
 }
 
 tr.Failed {
-	background: #fbd0ff;
+	background: #ffe9d0;
 	font-weight: bold;
 }
 
