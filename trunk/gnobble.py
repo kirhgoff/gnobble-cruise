@@ -3,6 +3,7 @@ from google.appengine.api import users
 from google.appengine.ext import db
 from google.appengine.ext.webapp import template
 from django.utils import simplejson
+from google.appengine.api import mail
 
 import logging
 import os
@@ -71,19 +72,22 @@ def processRequest (requestHandler):
 #    record.author = 'author'
 #    record.timestamp = datetime.datetime.now()
 #    record.pathCount = 3
-#    record.status = "Running"
+    record.status = "Running"
     record.put ()
 
     data = runTestsAndGetDetails()
     
-    if hasFailed (data):
+    failed = hasFailed (data)
+    if failed:
         record.status = "Failed"
     else:
         record.status = "OK"
         
     record.details = data
     record.put ()
-        
+    
+    if (failed):
+        sendMailOnFailure (record)    
 
 def runTestsAndGetDetails():
     #requestHandler.response.out.write ("started")
@@ -99,3 +103,9 @@ def hasFailed (data):
         return True
     else:
         return False
+
+def sendMailOnFailure (record):    
+    mail.send_mail(sender="kirill.lastovirya@gmail.com",
+              to="gpmedia@googlegroups.com",
+              subject="Failed tests: %s %s" % (record.author, record.message),
+              body=record.details)

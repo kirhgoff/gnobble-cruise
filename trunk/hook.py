@@ -11,7 +11,9 @@ class MainHandler(webapp.RequestHandler):
 
   def post(self):
     gnobble.processRequest (self)
-  
+    
+  def get(self):
+    gnobble.processRequest (self) 
 
 def main():
     #we can use different handlers for operations like start tests, finish tests
