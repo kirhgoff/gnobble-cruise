@@ -1,6 +1,5 @@
 body {
 	font-family: arial;
-	font-size: 0.7em;
 }
 
 table {
@@ -10,13 +9,42 @@ table {
 td {
 	padding-left: 1em;
 	padding-right: 1em;
+	vertical-align: top;
+}
+
+td:last-child {
+	border-bottom: none;
+}
+
+tr {
+	font-size: 0.7em;
+	border-bottom: solid black 1px;
+}
+
+tr.Failed {
+	background: #fbd0ff;
+	font-weight: bold;
 }
 
 .header {
+	font-size: 1em;
 	font-variant: small-caps;
 	background: #cbfbca;
 }
 
-tr:nth-child(odd) {background: #fbd0c6}
-tr:nth-child(even) {background: #fafbc6;}
-tr:nth-child(n+2) {	background: #d3fbc6;}
+.details {
+	cursor: pointer;
+}
+
+tr:nth-child(odd) {background: #CCC}
+tr:nth-child(even) {background: #FFF}
+
+.visible {
+	display: block;
+}
+
+.invisible {
+	display: none;
+}
+
+
