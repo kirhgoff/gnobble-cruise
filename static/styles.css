@@ -1,0 +1,14 @@
+body {
+	font-family: arial;
+	font-size: 0.7em;
+}
+
+table {
+	border: solid black 1px;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+.header {
+	font-variant: small-caps;
+}

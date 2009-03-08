@@ -1,0 +1,25 @@
+<html>
+<head>
+<title>gp-media cruise control</title>
+	<link type="text/css" rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+<h2>Last updates to svn:</h2>
+<table>
+<tr class="header">
+<td>Timestamp</td>
+<td>Author</td>
+<td>Message</td>
+<td>Changes</td>
+</tr>
+{% for record in records %}
+<tr>
+<td>{{ record.timestamp }}</td>
+<td>{{ record.author }}</td>
+<td>{{ record.message }}</td>
+<td>{{ record.pathCount }}</td>
+</tr>
+{% endfor %}
+</table>
+</body>
+</html>
