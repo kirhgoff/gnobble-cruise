@@ -5,10 +5,18 @@ body {
 
 table {
 	border: solid black 1px;
+}
+
+td {
 	padding-left: 1em;
 	padding-right: 1em;
 }
 
 .header {
 	font-variant: small-caps;
+	background: #cbfbca;
 }
+
+tr:nth-child(odd) {background: #fbd0c6}
+tr:nth-child(even) {background: #fafbc6;}
+tr:nth-child(n+2) {	background: #d3fbc6;}
