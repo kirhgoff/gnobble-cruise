@@ -2,22 +2,38 @@
 <head>
 <title>gp-media cruise control</title>
 	<link type="text/css" rel="stylesheet" href="static/styles.css">
+	<script type="text/javascript">
+	
+	function show (id) {
+		style = document.getElementById(id).getAttribute("class");
+		if (style == "visible")
+			style = "invisible";
+		else
+			style = "visible";
+		document.getElementById(id).setAttribute("class", style);
+	}
+	</script>
 </head>
 <body>
 <h2>Last updates to svn:</h2>
 <table>
 <tr class="header">
+<td>Status</td>
 <td>Timestamp</td>
 <td>Author</td>
 <td>Message</td>
 <td>Changes</td>
+<td>Details</td>
 </tr>
 {% for record in records %}
-<tr>
+<tr class="{{ record.status }}">
+<td>{{ record.status }}</td>
 <td>{{ record.timestamp }}</td>
 <td>{{ record.author }}</td>
 <td>{{ record.message }}</td>
 <td>{{ record.pathCount }}</td>
+<td><div class="details" onclick="show ('details{{ forloop.counter }}')">toggle show details</div>
+<div id="details{{ forloop.counter }}" class="invisible">{{ record.details }}<div></td>
 </tr>
 {% endfor %}
 </table>

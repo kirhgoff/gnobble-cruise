@@ -7,6 +7,8 @@ from django.utils import simplejson
 import logging
 import os
 import datetime
+import urllib
+import re
 
 #-------------------------------------------
 # Sample JSON for SVN commit hook
@@ -38,6 +40,8 @@ class Record(db.Model):
     timestamp = db.DateTimeProperty()
     message = db.StringProperty()
     pathCount = db.IntegerProperty ()
+    details = db.TextProperty ()
+    status = db.StringProperty ();
     
 #---------------------------------------
 #   GOBBLE Application code 
@@ -55,13 +59,43 @@ def printStatistics (requestHandler):
 
 
 def processRequest (requestHandler):
-     logging.debug ("Got request")    
-     payload = simplejson.loads(requestHandler.request.body)
-     for revision in payload['revisions']:
+    payload = simplejson.loads(requestHandler.request.body)
+    for revision in payload['revisions']:
         logging.info ('Project %s, revision %s contains %s paths',payload['project_name'],revision['revision'],revision['path_count'])
-        record = Record ()
-        record.message = revision['message']
-        record.author = revision['author']
-        record.timestamp = datetime.datetime.fromtimestamp(revision['timestamp'])
-        record.pathCount = revision['path_count']
-        record.put ()       
+    record = Record ()
+    record.message = revision['message']
+    record.author = revision['author']
+    record.timestamp = datetime.datetime.fromtimestamp(revision['timestamp'])
+    record.pathCount = revision['path_count']
+#    record.message = 'message'
+#    record.author = 'author'
+#    record.timestamp = datetime.datetime.now()
+#    record.pathCount = 3
+#    record.status = "Running"
+    record.put ()
+
+    data = runTestsAndGetDetails()
+    
+    if hasFailed (data):
+        record.status = "Failed"
+    else:
+        record.status = "OK"
+        
+    record.details = data
+    record.put ()
+        
+
+def runTestsAndGetDetails():
+    #requestHandler.response.out.write ("started")
+    #url = 'http://localhost/tests.php'
+    url = 'http://notimob.ru/tests.php'
+    urlHandler = urllib.urlopen(url)
+    data = urlHandler.read()
+    return data
+
+def hasFailed (data):
+    result = re.search("All (\d+) tests passed succesfully.", data)
+    if result is None:
+        return True
+    else:
+        return False
