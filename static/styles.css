@@ -10,6 +10,7 @@ td {
 	padding-left: 1em;
 	padding-right: 1em;
 	vertical-align: top;
+	white-space: nowrap
 }
 
 tr {
@@ -28,19 +29,35 @@ tr.Failed {
 	background: #cbfbca;
 }
 
+.monitoring-header {
+	font-size: 1em;
+	font-variant: small-caps;
+	background: #e8b9f4;
+}
 .details {
 	cursor: pointer;
 }
 
-tr:nth-child(odd) {background: #CCC}
-tr:nth-child(even) {background: #FFF}
+tr:nth-child(odd) {background: black}
+tr:nth-child(even) {background: red}
 
 .visible {
 	display: block;
 }
 
+.wrap {
+ white-space: normal;
+}
+
+
 .invisible {
 	display: none;
 }
+
+.ms {
+	font-size: 0.5em;
+}
+
+
 
 

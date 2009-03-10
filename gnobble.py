@@ -45,7 +45,8 @@ class Record(db.Model):
     status = db.StringProperty ();
     
 class NotimobRequest(db.Model):
-    timestamp = db.DateTimeProperty()
+    timestampNotimob = db.DateTimeProperty()
+    timestampGnobble = db.DateTimeProperty()
     host = db.StringProperty ()
     user = db.StringProperty()
     userAgent = db.StringProperty()
@@ -55,21 +56,27 @@ class NotimobRequest(db.Model):
     error = db.StringProperty (); 
     template = db.StringProperty ();
     
-    millisCommandsTime = db.FloatProperty ()
-    millisRenderTime = db.FloatProperty ()
-    millisPureDatabaseTime = db.FloatProperty () 
+    microCommandsTime = db.FloatProperty ()
+    microRenderTime = db.FloatProperty ()
+    microPureDatabaseTime = db.FloatProperty () 
 
-    def overallTime():
-        return millisCommandsTime
+    def overallTime(self):
+        return 1000*(self.inMicroseconds (datetime.self.timestampGnobble) - self.inMicroseconds (self.timestampNotimob))
+    def requestTime (self):
+        return 1000*(self.microCommandsTime + self.microRenderTime)
+    def commandsTime (self):
+        return self.microCommandsTime*1000
+    def renderTime (self):
+        return self.microRenderTime*1000
+    def pureDatabaseTime (self):
+        return self.microPureDatabaseTime*1000
 
+    def inMicroseconds (self, value):
+        return time.mktime(value.timetuple())+1e-6*value.microsecond
 #---------------------------------------
 #   GOBBLE Application code 
 #---------------------------------------
 def renderMain (requestHandler):
-    #fix the cache
-    requests = NotimobRequest.all().fetch (100)
-    for request in requests:
-        request.put ()
     
     commitsListView = renderCommitStatistics(requestHandler)
     requestsListView = renderRequestStatistics(requestHandler)
@@ -94,7 +101,7 @@ def renderCommitStatistics (requestHandler):
     return template.render(path, template_values)
 
 def renderRequestStatistics (requestHandler):
-    requests_query = NotimobRequest.all().order('timestamp')
+    requests_query = NotimobRequest.all().order('-timestampNotimob')
     requests = requests_query.fetch(100)
 
     template_values = {
@@ -106,8 +113,8 @@ def renderRequestStatistics (requestHandler):
 
 def processCommitRequest (requestHandler):
     payload = simplejson.loads(requestHandler.request.body)
-#    for revision in payload['revisions']:
-#        logging.info ('Project %s, revision %s contains %s paths',payload['project_name'],revision['revision'],revision['path_count'])
+    for revision in payload['revisions']:
+        logging.info ('Project %s, revision %s contains %s paths',payload['project_name'],revision['revision'],revision['path_count'])
     record = Record ()
     record.message = revision['message']
     record.author = revision['author']
@@ -133,7 +140,8 @@ def processCommitRequest (requestHandler):
 
 def processNotimobRequest (requestHandler):
     request = NotimobRequest ()
-    request.timestamp = datetime.datetime.fromtimestamp(float (requestHandler.request.get ('timestamp')))
+    request.timestampNotimob = datetime.datetime.fromtimestamp(float (requestHandler.request.get ('timestamp')))
+    request.timestampGnobble = datetime.datetime.today ()
     request.user = requestHandler.request.get ('user')
     request.userAgent = requestHandler.request.get ('userAgent')
     request.page = requestHandler.request.get ('page')
@@ -142,9 +150,9 @@ def processNotimobRequest (requestHandler):
     request.error = requestHandler.request.get ('error')
     request.template = requestHandler.request.get ('template')
     request.host = requestHandler.request.get ('host') 
-    request.millisCommandsTime = float(requestHandler.request.get ('millisCommandsTime'))
-    request.millisRenderTime = float (requestHandler.request.get ('millisRenderTime'))
-    request.millisPureDatabaseTime = float (requestHandler.request.get ('millisPureDatabaseTime'))
+    request.microCommandsTime = float(requestHandler.request.get ('microCommandsTime'))
+    request.microRenderTime = float (requestHandler.request.get ('microRenderTime'))
+    request.microPureDatabaseTime = float (requestHandler.request.get ('microPureDatabaseTime'))
     
     #TODO add user agent
     request.put ()  

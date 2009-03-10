@@ -1,31 +1,35 @@
 <table>
-<tr class="header">
+<tr class="monitoring-header">
 <td>Timestamp</td>
 <td>User</td>
 <td>Request</td>
 <td>Page</td>
 <td>Command</td>
 <td>Template</td>
-<td>Error</td>
-<td>Overall time</td>
-<td>Command processing time</td>
-<td>Pure database time</td>
-<td>Rendering time</td>
-
+<!--  <td>Error</td>-->
+<!--<td>Overall time <div class="ms">(ms)</div></td>-->
+<td class="wrap">Request time <div class="ms">(ms)</div></td>
+<td class="wrap">Command processing time <div class="ms">(ms)</div></td>
+<td class="wrap">Pure database time <div class="ms">(ms)</div></td>
+<td class="wrap">Rendering time <div class="ms">(ms)</div></td>
+<td>User agent</td>
 </tr>
 {% for request in requests %}
 <tr class="{{ request.status }}">
-<td>{{ request.timestamp }}</td>
+<td>{{ request.timestampNotimob }}</td>
 <td>{{ request.user }}</td>
 <td>{{ request.requestType }}</td>
 <td>{{ request.page }}</td>
 <td>{{ request.command }}</td>
 <td>{{ request.template }}</td>
-<td>{{ request.error }}</td>
-<td>{{ request.millisCommandsTime }}</td>
-<td>{{ request.millisCommandsTime }}</td>
-<td>{{ request.millisRenderTime }}</td>
-<td>{{ request.millisPureDatabaseTime }}</td>
+<!-- <td>{{ request.error }}</td>-->
+<!--<td>{{ request.overallTime|floatformat:2 }}</td>-->
+<td>{{ request.requestTime|floatformat:2 }}</td>
+<td>{{ request.commandsTime|floatformat:2 }}</td>
+<td>{{ request.pureDatabaseTime|floatformat:2 }}</td>
+<td>{{ request.renderTime|floatformat:2 }}</td>
+<td>{{ request.userAgent }}</td>
+
 </tr>
 {% endfor %}
 </table>
