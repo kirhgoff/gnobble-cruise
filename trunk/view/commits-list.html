@@ -14,7 +14,7 @@
 <td>{{ record.author }}</td>
 <td>{{ record.message }}</td>
 <td>{{ record.pathCount }}</td>
-<td><div class="details" onclick="show ('details{{ forloop.counter }}')">toggle show details</div>
+<td><div class="commit" onclick="show ('commit{{ forloop.counter }}')">toggle show details</div>
 <div id="details{{ forloop.counter }}" class="invisible">{{ record.details }}<div></td>
 </tr>
 {% endfor %}
