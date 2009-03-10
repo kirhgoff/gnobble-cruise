@@ -10,9 +10,6 @@ handlers:
 
 - url: /static
   static_dir: static
-  
-- url: /hook
-  script: hook.py
 
-- url: /
-  script: main.py  
+- url: .*
+  script: main.py

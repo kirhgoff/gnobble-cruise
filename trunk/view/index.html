@@ -1,0 +1,27 @@
+<html>
+<head>
+<title>gp-media cruise control</title>
+	<link type="text/css" rel="stylesheet" href="static/styles.css">
+	<script type="text/javascript">
+	
+	function show (id) {
+		style = document.getElementById(id).getAttribute("class");
+		if (style == "visible")
+			style = "invisible";
+		else
+			style = "visible";
+		document.getElementById(id).setAttribute("class", style);
+	}
+	</script>
+</head>
+<body>
+<h2>notimob::monitoring::page</h2>
+
+<h4>10 last commits: who is working</h4>
+{{ commitsListView }}
+
+<h4>100 last requests: who is using</h4>
+{{ requestsListView }}
+
+</body>
+</html>
