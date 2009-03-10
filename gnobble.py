@@ -44,34 +44,76 @@ class Record(db.Model):
     details = db.TextProperty ()
     status = db.StringProperty ();
     
+class NotimobRequest(db.Model):
+    timestamp = db.DateTimeProperty()
+    host = db.StringProperty ()
+    user = db.StringProperty()
+    userAgent = db.StringProperty()
+    page = db.StringProperty()
+    command = db.StringProperty ()
+    requestType = db.StringProperty ()
+    error = db.StringProperty (); 
+    template = db.StringProperty ();
+    
+    millisCommandsTime = db.FloatProperty ()
+    millisRenderTime = db.FloatProperty ()
+    millisPureDatabaseTime = db.FloatProperty () 
+
+    def overallTime():
+        return millisCommandsTime
+
 #---------------------------------------
 #   GOBBLE Application code 
 #---------------------------------------
-def printStatistics (requestHandler):
+def renderMain (requestHandler):
+    #fix the cache
+    requests = NotimobRequest.all().fetch (100)
+    for request in requests:
+        request.put ()
+    
+    commitsListView = renderCommitStatistics(requestHandler)
+    requestsListView = renderRequestStatistics(requestHandler)
+     
+    template_values = {
+      'commitsListView': commitsListView,
+      'requestsListView': requestsListView,
+    }
+    
+    path = os.path.join(os.path.dirname(__file__), './view/index.html')
+    requestHandler.response.out.write (template.render(path, template_values))   
+
+def renderCommitStatistics (requestHandler):
     records_query = Record.all().order('-timestamp')
-    records = records_query.fetch(50)
+    records = records_query.fetch(10)
 
     template_values = {
       'records': records,
       }
 
-    path = os.path.join(os.path.dirname(__file__), 'index.html')
-    requestHandler.response.out.write(template.render(path, template_values))
+    path = os.path.join(os.path.dirname(__file__), './view/commits-list.html')
+    return template.render(path, template_values)
 
+def renderRequestStatistics (requestHandler):
+    requests_query = NotimobRequest.all().order('timestamp')
+    requests = requests_query.fetch(100)
 
-def processRequest (requestHandler):
+    template_values = {
+      'requests': requests,
+      }
+
+    path = os.path.join(os.path.dirname(__file__), './view/requests-list.html')
+    return template.render(path, template_values)
+
+def processCommitRequest (requestHandler):
     payload = simplejson.loads(requestHandler.request.body)
-    for revision in payload['revisions']:
-        logging.info ('Project %s, revision %s contains %s paths',payload['project_name'],revision['revision'],revision['path_count'])
+#    for revision in payload['revisions']:
+#        logging.info ('Project %s, revision %s contains %s paths',payload['project_name'],revision['revision'],revision['path_count'])
     record = Record ()
     record.message = revision['message']
     record.author = revision['author']
     record.timestamp = datetime.datetime.fromtimestamp(revision['timestamp'])
     record.pathCount = revision['path_count']
-#    record.message = 'message'
-#    record.author = 'author'
-#    record.timestamp = datetime.datetime.now()
-#    record.pathCount = 3
+
     record.status = "Running"
     record.put ()
 
@@ -88,6 +130,24 @@ def processRequest (requestHandler):
     
     if (failed):
         sendMailOnFailure (record)    
+
+def processNotimobRequest (requestHandler):
+    request = NotimobRequest ()
+    request.timestamp = datetime.datetime.fromtimestamp(float (requestHandler.request.get ('timestamp')))
+    request.user = requestHandler.request.get ('user')
+    request.userAgent = requestHandler.request.get ('userAgent')
+    request.page = requestHandler.request.get ('page')
+    request.command = requestHandler.request.get ('command')
+    request.requestType = requestHandler.request.get ('requestType')
+    request.error = requestHandler.request.get ('error')
+    request.template = requestHandler.request.get ('template')
+    request.host = requestHandler.request.get ('host') 
+    request.millisCommandsTime = float(requestHandler.request.get ('millisCommandsTime'))
+    request.millisRenderTime = float (requestHandler.request.get ('millisRenderTime'))
+    request.millisPureDatabaseTime = float (requestHandler.request.get ('millisPureDatabaseTime'))
+    
+    #TODO add user agent
+    request.put ()  
 
 def runTestsAndGetDetails():
     #requestHandler.response.out.write ("started")

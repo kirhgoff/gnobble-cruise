@@ -12,10 +12,6 @@ td {
 	vertical-align: top;
 }
 
-td:last-child {
-	border-bottom: none;
-}
-
 tr {
 	font-size: 0.7em;
 	border-bottom: solid black 1px;

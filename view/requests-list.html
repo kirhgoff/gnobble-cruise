@@ -1,0 +1,32 @@
+<table>
+<tr class="header">
+<td>Timestamp</td>
+<td>User</td>
+<td>Request</td>
+<td>Page</td>
+<td>Command</td>
+<td>Template</td>
+<td>Error</td>
+<td>Overall time</td>
+<td>Command processing time</td>
+<td>Pure database time</td>
+<td>Rendering time</td>
+
+</tr>
+{% for request in requests %}
+<tr class="{{ request.status }}">
+<td>{{ request.timestamp }}</td>
+<td>{{ request.user }}</td>
+<td>{{ request.requestType }}</td>
+<td>{{ request.page }}</td>
+<td>{{ request.command }}</td>
+<td>{{ request.template }}</td>
+<td>{{ request.error }}</td>
+<td>{{ request.millisCommandsTime }}</td>
+<td>{{ request.millisCommandsTime }}</td>
+<td>{{ request.millisRenderTime }}</td>
+<td>{{ request.millisPureDatabaseTime }}</td>
+</tr>
+{% endfor %}
+</table>
+
